@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:17-alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432"
+
+  webapp:
+    build: .
+    image: slap
+    env:
+      RAILS_ENV: production
+      RAILS_SERVE_STATIC_FILES: true
+    command: bash -c "./bin/rails server -b 0.0.0.0"
+    volumes:
+      - .:/rails
+      - gem_cache:/usr/local/bundle
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+
+volumes:
+  db_data:
+  gem_cache:
